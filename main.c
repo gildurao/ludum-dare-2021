@@ -6,6 +6,8 @@
 #include "maps/SampleMap.h"
 #include "tiles/SampleTiles.h"
 
+#include "constants.h"
+
 #define camera_max_y ((sample_mapHeight - 18) * 8)
 #define camera_max_x ((sample_mapWidth - 20) * 8)
 
@@ -19,6 +21,10 @@ uint16_t camera_x, camera_y, old_camera_x, old_camera_y;
 uint8_t map_pos_x, map_pos_y, old_map_pos_x, old_map_pos_y;
 // redraw flag, indicates that camera position was changed
 uint8_t redraw;
+
+// In game variables
+
+uint8_t start_screen_retries = 3;
 
 void set_camera()
 {
@@ -59,10 +65,6 @@ void set_camera()
     old_camera_x = camera_x, old_camera_y = camera_y;
 }
 
-void main(void)
-{
-    levelOne();
-}
 void levelOne(void)
 {
     DISPLAY_OFF;
@@ -85,6 +87,9 @@ void levelOne(void)
     while (TRUE)
     {
         joy = joypad();
+
+        // printf("%d", joy);
+
         // up or down
         if (joy & J_UP)
         {
@@ -142,5 +147,43 @@ void showTitleScreen()
     {
         scroll_bkg(1, 1);
         delay(100);
+        check_player_start_activity();
     }
+}
+
+void show_all_you_had_to_do_was_press_the_start_button_screen()
+{
+    puts("All you had to do was press the damn start button, CJ!");
+
+    exit();
+}
+
+void check_player_start_activity()
+{
+
+    if (start_screen_retries > 0)
+    {
+        joy = joypad();
+
+        if (joy != 0)
+        {
+            if (joy != J_START)
+            {
+                show_all_you_had_to_do_was_press_the_start_button_screen();
+            }
+            else
+            {
+                start_screen_retries--;
+            }
+        }
+    }
+    else
+    {
+        levelOne();
+    }
+}
+
+void main(void)
+{
+    showTitleScreen();
 }
