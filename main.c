@@ -5,6 +5,7 @@
 
 #include "maps/SampleMap.h"
 #include "tiles/SampleTiles.h"
+#include "tiles/PlayerTile.h"
 
 #include "constants.h"
 
@@ -12,6 +13,35 @@
 #define camera_max_x ((sample_mapWidth - 20) * 8)
 
 #define MIN(A, B) ((A) < (B) ? (A) : (B))
+
+#define NBSFRAMES 0x02 /* Nb frames for the sprite */
+
+#define PLAYER_RIGHT 0x01
+#define PLAYER_LEFT 0x02
+#define PLAYER_IDLE 0x03
+
+const unsigned char player_right[] = {
+    0x00,
+    0x01,
+    0x02,
+    0x03,
+    0x04,
+    0x05,
+};
+
+const unsigned char player_idle[] = {
+    0x03,
+    0x00,
+};
+
+const unsigned char player_left[] = {
+    0x06,
+    0x07,
+    0x08,
+    0x09,
+    0x0A,
+    0x0B,
+};
 
 uint8_t joy;
 
@@ -21,10 +51,67 @@ uint16_t camera_x, camera_y, old_camera_x, old_camera_y;
 uint8_t map_pos_x, map_pos_y, old_map_pos_x, old_map_pos_y;
 // redraw flag, indicates that camera position was changed
 uint8_t redraw;
+static uint8_t time = 0; /* Global "time" value (counter) */
+fixed sposx, sposy;      /* Sprite position (fixed point) */
+fixed sspx, sspy;        /* Sprite speed (fixed point) */
+uint8_t sframe = 0;      /* Current frame of the sprite */
+
+void animate_player(uint8_t *animation);
+void place_sprite();
 
 // In game variables
 
 uint8_t start_screen_retries = 3;
+
+/* Set sprite tiles */
+void player_sprite(uint8_t *animation)
+{
+    uint8_t s;
+
+    s = sframe << 1;
+    if (animation == PLAYER_RIGHT)
+    {
+        set_sprite_tile(0, player_right[s]);
+    }
+    if (animation == PLAYER_LEFT)
+    {
+        set_sprite_tile(0, player_left[s]);
+    }
+    if (animation == PLAYER_IDLE)
+    {
+        set_sprite_tile(0, player_idle[s]);
+    }
+    // set_sprite_tile(1, player_right[s + 1]);
+}
+
+void animate_player(uint8_t *animation)
+{
+    uint8_t number_farmes = 0x01;
+    if (animation == PLAYER_RIGHT || animation == PLAYER_LEFT)
+    {
+        number_farmes = 0x03;
+    }
+    else
+    {
+        number_farmes = 0x01;
+        sframe = 0;
+    }
+
+    if ((time & 0x07) == 0)
+
+    {
+        sframe++;
+        if (sframe == number_farmes)
+            sframe = 0;
+        player_sprite(animation);
+    }
+}
+
+void place_sprite()
+{
+    move_sprite(0, sposx.b.h, sposy.b.h);
+    // move_sprite(1, sposx.b.h + 8, sposy.b.h);
+}
 
 void set_camera()
 {
@@ -69,7 +156,30 @@ void levelOne(void)
 {
     DISPLAY_OFF;
     SHOW_BKG;
-    set_bkg_data(0, 20u, tiles);
+    disable_interrupts();
+
+    LCDC_REG = LCDCF_OFF | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_OBJON | LCDCF_BGON;
+    /*
+   * LCD        = Off
+   * BG Chr     = 0x8800
+   * BG Bank    = 0x9800
+   * OBJ        = 8x8
+   * OBJ        = On
+   * BG         = On
+   */
+    // Loads sprites to memory
+    set_sprite_data(0x00, 11u, player);
+    set_sprite_prop(0, 0x00);
+    // set_sprite_prop(1, 0x00);
+    sframe = 0;
+    sposx.w = 0x1000;
+    sposy.w = 0x1000;
+    sspx.w = 0x0040;
+    sspy.w = 0x0040;
+    player_sprite(PLAYER_RIGHT);
+    place_sprite();
+
+    set_bkg_data(0, 5u, tiles);
 
     map_pos_x = map_pos_y = 0;
     old_map_pos_x = old_map_pos_y = 255;
@@ -80,16 +190,22 @@ void levelOne(void)
     old_camera_x = camera_x;
     old_camera_y = camera_y;
 
+    DISPLAY_ON;
+    enable_interrupts();
     redraw = FALSE;
 
+    uint8_t player_animation = PLAYER_IDLE;
     SCX_REG = camera_x;
     SCY_REG = camera_y;
     while (TRUE)
     {
         joy = joypad();
 
+        time++;
         // printf("%d", joy);
+        animate_player(player_animation);
 
+        player_animation = PLAYER_IDLE;
         // up or down
         if (joy & J_UP)
         {
@@ -113,7 +229,9 @@ void levelOne(void)
             if (camera_x)
             {
                 camera_x--;
+
                 redraw = TRUE;
+                player_animation = PLAYER_LEFT;
             }
         }
         else if (joy & J_RIGHT)
@@ -122,16 +240,20 @@ void levelOne(void)
             {
                 camera_x++;
                 redraw = TRUE;
+                player_animation = PLAYER_RIGHT;
             }
         }
         if (redraw)
         {
             wait_vbl_done();
+
             set_camera();
             redraw = FALSE;
         }
         else
+        {
             wait_vbl_done();
+        }
     }
 }
 
