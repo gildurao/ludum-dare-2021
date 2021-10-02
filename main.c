@@ -53,17 +53,114 @@ uint16_t camera_x, camera_y, old_camera_x, old_camera_y;
 uint8_t map_pos_x, map_pos_y, old_map_pos_x, old_map_pos_y;
 // redraw flag, indicates that camera position was changed
 uint8_t redraw;
-static uint8_t time = 0; /* Global "time" value (counter) */
-fixed sposx, sposy;      /* Sprite position (fixed point) */
-fixed sspx, sspy;        /* Sprite speed (fixed point) */
-uint8_t sframe = 0;      /* Current frame of the sprite */
+static uint8_t time = 0;      /* Global "time" value (counter) */
+fixed sposx, sposy;           /* Sprite position (fixed point) */
+fixed Last_sposx, Last_sposy; /* Last sprite position (fixed point) */
+fixed sspx, sspy;             /* Sprite speed (fixed point) */
+uint8_t sframe = 0;           /* Current frame of the sprite */
 
 void animate_player(uint8_t *animation);
 void place_sprite();
+void colison();
 
 // In game variables
 
 uint8_t start_screen_retries = 3;
+
+/* Colison phisics */
+void colision()
+{
+
+    uint16_t player_tile_x = (sposx.b.h - 8) / 8 + (camera_x / 8);
+    uint16_t player_tile_y = (sposy.b.h + 1) / 8;
+    uint16_t tile_index_under = sample_mapWidth * (player_tile_y - 1) + player_tile_x;
+    uint16_t tile_index_over = sample_mapWidth * (player_tile_y - 2) + player_tile_x;
+    uint16_t tile_index_right = sample_mapWidth * (player_tile_y) + player_tile_x + 1;
+    uint16_t tile_index_left = sample_mapWidth * (player_tile_y) + player_tile_x - 1;
+
+    if (sample_map[tile_index_under] == 0x00)
+    {
+        sspy.w = 0;
+    }
+    if (sample_map[tile_index_right] == 0x00)
+    {
+        sspx.w = 0;
+    }
+    if (sample_map[tile_index_right] == 0x00)
+    {
+        sspx.w = 0;
+    }
+    if (sample_map[tile_index_under] == 0x02)
+    {
+        sspy.w = sspy.w + 0x005;
+    }
+}
+
+_Bool over_ground()
+{
+    uint16_t player_tile_x = (sposx.b.h - 8) / 8 + (camera_x / 8);
+    uint16_t player_tile_y = (sposy.b.h + 1) / 8;
+    uint16_t tile_index_under = sample_mapWidth * (player_tile_y - 1) + player_tile_x;
+    uint16_t tile_index_over = sample_mapWidth * (player_tile_y - 2) + player_tile_x;
+    if (sample_map[tile_index_under] == 0x00 && sample_map[tile_index_over] != 0x00)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+_Bool y_collision()
+{
+    uint16_t player_tile_x = (sposx.b.h - 8) / 8 + (camera_x / 8);
+    uint16_t player_tile_y = (sposy.b.h) / 8;
+    uint16_t tile_index_under = sample_mapWidth * (player_tile_y - 1) + player_tile_x;
+    uint16_t tile_index_over = sample_mapWidth * (player_tile_y - 2) + player_tile_x;
+    if (sample_map[tile_index_under] == 0x00 || sample_map[tile_index_over] == 0x00)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+uint8_t walls_right()
+{
+    uint16_t player_tile_x = ((sposx.b.h + 1) + camera_x) / 8;
+    uint16_t player_tile_y_low = (sposy.b.h - 9) / 8;
+    uint16_t player_tile_y_high = (sposy.b.h - 15) / 8;
+    uint16_t tile_index_right_low = sample_mapWidth * (player_tile_y_low) + player_tile_x;
+    uint16_t tile_index_right_high = sample_mapWidth * (player_tile_y_high) + player_tile_x;
+    if (sample_map[tile_index_right_low] == 0x00 || sample_map[tile_index_right_high] == 0x00)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+uint8_t walls_left()
+{
+    uint16_t player_tile_x = ((sposx.b.h - 9) + camera_x) / 8;
+    uint16_t player_tile_y_low = (sposy.b.h - 9) / 8;
+    uint16_t player_tile_y_high = (sposy.b.h - 15) / 8;
+    uint16_t tile_index_low = sample_mapWidth * (player_tile_y_low) + player_tile_x;
+    uint16_t tile_index_high = sample_mapWidth * (player_tile_y_high) + player_tile_x;
+    if (sample_map[tile_index_low] == 0x00 || sample_map[tile_index_high] == 0x00)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
 
 /* Set sprite tiles */
 void player_sprite(uint8_t *animation)
@@ -111,6 +208,11 @@ void animate_player(uint8_t *animation)
 
 void place_sprite()
 {
+    // if (y_collision() == 1){
+    //     sposx.b.h = Last_sposx.b.h
+    // } else {
+
+    // }
     move_sprite(0, sposx.b.h, sposy.b.h);
     // move_sprite(1, sposx.b.h + 8, sposy.b.h);
 }
@@ -176,8 +278,8 @@ void levelOne(void)
     sframe = 0;
     sposx.w = 0x1000;
     sposy.w = 0x1000;
-    sspx.w = 0x0040;
-    sspy.w = 0x0040;
+    sspx.w = 0x0000;
+    sspy.w = 0x0050;
     player_sprite(PLAYER_RIGHT);
     place_sprite();
 
@@ -206,43 +308,98 @@ void levelOne(void)
         time++;
         // printf("%d", joy);
         animate_player(player_animation);
+        colision();
 
+        /* Update sprite */
+        sposx.w += sspx.w;
+        sposy.w += sspy.w;
+        place_sprite();
+        // printf("%d", over_ground());
         player_animation = PLAYER_IDLE;
+        // Jump
+        if (joy & J_B)
+
+        {
+            if (over_ground() == 1)
+            {
+                sposy.w = sposy.w - 200;
+                sspy.w = -0x090;
+            }
+        }
         // up or down
-        if (joy & J_UP)
-        {
-            if (camera_y)
-            {
-                camera_y--;
-                redraw = TRUE;
-            }
-        }
-        else if (joy & J_DOWN)
-        {
-            if (camera_y < camera_max_y)
-            {
-                camera_y++;
-                redraw = TRUE;
-            }
-        }
+        // if (joy & J_UP)
+        // {
+        //     if (camera_y)
+        //     {
+        //         camera_y--;
+        //         redraw = TRUE;
+        //     }
+        // }
+        // else if (joy & J_DOWN)
+        // {
+        //     if (camera_y < camera_max_y)
+        //     {
+        //         camera_y++;
+        //         redraw = TRUE;
+        //     }
+        // }
         // left or right
         if (joy & J_LEFT)
         {
-            if (camera_x)
+            if (walls_left() == 0)
             {
-                camera_x--;
 
-                redraw = TRUE;
-                player_animation = PLAYER_LEFT;
+                if (sposx.b.h > 8 * 5)
+                {
+                    player_animation = PLAYER_LEFT;
+                    sposx.b.h = sposx.b.h - 1;
+                }
+                else if (camera_x)
+                {
+                    camera_x--;
+                    redraw = TRUE;
+                    player_animation = PLAYER_LEFT;
+                }
+                else
+                {
+                    if (sposx.b.h > 8)
+                    {
+                        sposx.b.h = sposx.b.h - 1;
+                        player_animation = PLAYER_LEFT;
+                    }
+                }
             }
         }
         else if (joy & J_RIGHT)
         {
-            if (camera_x < camera_max_x)
+
+            if (sposx.b.h < (20 - 7) * 8)
             {
-                camera_x++;
-                redraw = TRUE;
+                if (walls_right() == 0)
+                {
+                    sposx.b.h = sposx.b.h + 1;
+                }
+
                 player_animation = PLAYER_RIGHT;
+                // printf("%d < %d\n", camera_x, camera_max_x);
+            }
+            else if (camera_x < camera_max_x)
+            {
+                player_animation = PLAYER_RIGHT;
+                if (walls_right() == 0)
+                {
+                    camera_x++;
+                    redraw = TRUE;
+                }
+            }
+            else if (sposx.b.h < (20) * 8)
+            {
+                player_animation = PLAYER_RIGHT;
+
+                if (walls_right() == 0)
+                {
+                    sposx.b.h = sposx.b.h + 1;
+                }
             }
         }
         if (redraw)
