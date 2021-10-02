@@ -61,13 +61,15 @@ void set_camera()
 
 void main(void)
 {
+    showTitleScreen();
     levelOne();
 }
+
 void levelOne(void)
 {
     DISPLAY_OFF;
     SHOW_BKG;
-    set_bkg_data(0, 3u, tiles);
+    set_bkg_data(0, 20u, tiles);
 
     map_pos_x = map_pos_y = 0;
     old_map_pos_x = old_map_pos_y = 255;
