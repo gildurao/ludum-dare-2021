@@ -16,7 +16,8 @@ PROJECTNAME    = NoName
 
 BINS	    = bin/$(PROJECTNAME).gb
 MAP = maps/SampleMap.c
-TILES = tiles/SampleTiles.c
+TILES = tiles/SampleTiles.c tiles/PlayerTile.c
+
 CSOURCES   := $(wildcard *.c)
 ASMSOURCES := $(wildcard *.s)
 
