@@ -69,20 +69,6 @@ void levelOne(void)
     SHOW_BKG;
     set_bkg_data(0, 3u, tiles);
 
-void showTitleScreen()
-{
-    set_bkg_data(0, 11, letters);
-    set_bkg_tiles(0, 0, titleMapWidth, titleMapHeight, titleMap);
-
-    SHOW_BKG;
-    DISPLAY_ON;
-
-    while (1)
-    {
-        scroll_bkg(1, 1);
-        delay(100);
-    }
-}
     map_pos_x = map_pos_y = 0;
     old_map_pos_x = old_map_pos_y = 255;
     set_bkg_submap(map_pos_x, map_pos_y, 20, 18, sample_map, sample_mapWidth);
@@ -141,5 +127,20 @@ void showTitleScreen()
         }
         else
             wait_vbl_done();
+    }
+}
+
+void showTitleScreen()
+{
+    set_bkg_data(0, 11, letters);
+    set_bkg_tiles(0, 0, titleMapWidth, titleMapHeight, titleMap);
+
+    SHOW_BKG;
+    DISPLAY_ON;
+
+    while (1)
+    {
+        scroll_bkg(1, 1);
+        delay(100);
     }
 }
