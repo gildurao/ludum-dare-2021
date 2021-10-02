@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "tiles/title_screen/letters.c"
 #include "maps/title_screen/title_map.c"
+#include "tiles/follow_the_train/follow_the_train_data.c"
+#include "maps/follow_the_train/follow_the_train_map.c"
 
 #include "maps/SampleMap.h"
 #include "tiles/SampleTiles.h"
@@ -153,7 +155,10 @@ void showTitleScreen()
 
 void show_all_you_had_to_do_was_press_the_start_button_screen()
 {
-    puts("All you had to do was press the damn start button, CJ!");
+    set_bkg_data(0, 121, follow_the_train_data);
+    set_bkg_tiles(0, 0, 20, 18, follow_the_train_map);
+
+    SHOW_BKG;
 
     exit();
 }
