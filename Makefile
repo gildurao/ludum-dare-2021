@@ -15,6 +15,8 @@ LCC = $(GBDK_HOME)bin/lcc
 PROJECTNAME    = NoName
 
 BINS	    = bin/$(PROJECTNAME).gb
+MAP = maps/SampleMap.c
+TILES = tiles/SampleTiles.c
 CSOURCES   := $(wildcard *.c)
 ASMSOURCES := $(wildcard *.s)
 
@@ -26,7 +28,7 @@ compile.bat: Makefile
 
 # Compile and link all source files in a single call to LCC
 $(BINS):	$(CSOURCES) $(ASMSOURCES)
-	$(LCC) -o $@ $(CSOURCES) $(ASMSOURCES)
+	$(LCC) -o $@ $(CSOURCES) $(MAP) $(TILES) $(ASMSOURCES)
 
 clean:
 	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm
