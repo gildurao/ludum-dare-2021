@@ -155,6 +155,8 @@ void showTitleScreen()
 
 void show_all_you_had_to_do_was_press_the_start_button_screen()
 {
+    move_bkg(0, 0);
+
     set_bkg_data(0, 121, follow_the_train_data);
     set_bkg_tiles(0, 0, 20, 18, follow_the_train_map);
 
