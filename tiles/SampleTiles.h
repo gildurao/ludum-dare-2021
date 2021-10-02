@@ -6,7 +6,7 @@
 
  Info:
   Form                 : All tiles as one unit.
-  Format               : Gameboy 2 color.
+  Format               : Gameboy 4 color.
   Compression          : None.
   Counter              : None.
   Tile size            : 8 x 8
