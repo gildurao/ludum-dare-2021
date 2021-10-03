@@ -7,8 +7,8 @@
  Info:
    Section       : 
    Bank          : 0
-   Map size      : 60 x 20
-   Tile set      : Z:\home\joao\Documents\gamejam\gbtd22\sample-2.gbr
+   Map size      : 256 x 19
+   Tile set      : Z:\Users\ctw00745-admin\Documents\Development\gbdk\examples\ludum-dare-2021\assets\tiles\levelOne.gbr
    Plane count   : 1 plane (8 bits)
    Plane order   : Tiles are continues
    Tile offset   : 0
@@ -18,8 +18,8 @@
 
 */
 
-#define sample_mapWidth 60
-#define sample_mapHeight 20
+#define sample_mapWidth 256
+#define sample_mapHeight 19
 #define sample_mapBank 0
 
 extern unsigned char sample_map[];
