@@ -1,10 +1,10 @@
 #include <gb/gb.h>
 #include <stdio.h>
-#include "gbt_player/gbt_player.h"
 #include "tiles/title_screen/letters.c"
 #include "maps/title_screen/title_map.c"
 #include "tiles/follow_the_train/follow_the_train_data.c"
 #include "maps/follow_the_train/follow_the_train_map.c"
+#include "huGEDriver/huGEDriver.h"
 
 #include "maps/SampleMap.h"
 #include "tiles/map/SampleTiles.h"
@@ -19,6 +19,8 @@
 #define MIN(A, B) ((A) < (B) ? (A) : (B))
 
 #define NBSFRAMES 0x02 /* Nb frames for the sprite */
+
+extern const hUGESong_t song_Data;
 
 uint8_t joy;
 
@@ -300,13 +302,11 @@ void levelOne(void)
 
 void showTitleScreen()
 {
-    disable_interrupts();
-
-    gbt_play(song_Data, BG_MUSIC_MEMORY_BANK, BG_MUSIC_DEFAULT_SPEED);
-    gbt_loop(1);
-
-    set_interrupts(VBL_IFLAG);
-    enable_interrupts();
+    __critical
+    {
+        hUGE_init(&song_Data);
+        add_VBL(hUGE_dosound);
+    }
 
     set_bkg_data(0, 11, letters);
     set_bkg_tiles(0, 0, titleMapWidth, titleMapHeight, titleMap);
@@ -317,12 +317,9 @@ void showTitleScreen()
     while (1)
     {
         wait_vbl_done();
-
         scroll_bkg(1, 1);
         delay(100);
         check_player_start_activity();
-
-        gbt_update();
     }
 }
 
@@ -365,5 +362,10 @@ void check_player_start_activity()
 
 void main(void)
 {
+    LCDC_REG = 0xD1;
+    BGP_REG = 0b11100100;
+    NR52_REG = 0x80;
+    NR51_REG = 0xFF;
+    NR50_REG = 0x77;
     showTitleScreen();
 }

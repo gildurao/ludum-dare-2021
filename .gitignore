@@ -46,6 +46,8 @@
 *.mod*
 # ignore mod files for music assets
 !assets/music/*
+# ignore huGEDriver obj files
+!huGEDriver.obj*
 *.cmd
 .tmp_versions/
 modules.order

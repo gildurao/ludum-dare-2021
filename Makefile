@@ -19,6 +19,8 @@ MAP = maps/SampleMap.c
 TILES = tiles/map/SampleTiles.c tiles/player/PlayerTile.c
 ANIMATION = animation/player_ani.c
 MECANICS = mecanics/physics.c
+BGMUSIC = bg_music/hugetracker_bg_music.c
+HUGEDRIVER = huGEDriver/huGEDriver.obj.o
 CSOURCES   := $(wildcard *.c)
 ASMSOURCES := $(wildcard *.s)
 
@@ -30,7 +32,7 @@ compile.bat: Makefile
 
 # Compile and link all source files in a single call to LCC
 $(BINS):	$(CSOURCES) $(ASMSOURCES)
-	$(LCC) -o $@ $(CSOURCES) $(MAP) $(TILES) $(ANIMATION) $(MECANICS) $(ASMSOURCES)
+	$(LCC) -o $@ $(CSOURCES) $(MAP) $(TILES) $(ANIMATION) $(MECANICS) $(HUGEDRIVER) $(BGMUSIC) $(ASMSOURCES)
 
 clean:
 	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm
