@@ -1,2 +1,2 @@
 REM Automatically generated from Makefile
-lcc -o bin/NoName.gb main.c maps/SampleMap.c tiles/map/SampleTiles.c tiles/player/PlayerTile.c animation/player_ani.c mecanics/physics.c huGEDriver/huGEDriver.obj.o bg_music/hugetracker_bg_music.c
+lcc -o bin/unSTabLe.gb main.c maps/SampleMap.c tiles/map/SampleTiles.c tiles/player/PlayerTile.c animation/player_ani.c mecanics/physics.c huGEDriver/huGEDriver.obj.o bg_music/hugetracker_bg_music.c

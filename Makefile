@@ -12,7 +12,7 @@ LCC = $(GBDK_HOME)bin/lcc
 # LCC = $(LCC) -debug
 
 # You can set the name of the .gb ROM file here
-PROJECTNAME    = NoName
+PROJECTNAME    = unSTabLe
 
 BINS	    = bin/$(PROJECTNAME).gb
 MAP = maps/SampleMap.c
