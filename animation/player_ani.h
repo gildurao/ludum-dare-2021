@@ -9,4 +9,6 @@ related to player animation
 
 extern const unsigned char player_left[];
 extern const unsigned char player_right[];
+extern const unsigned char player_jump_right[];
+extern const unsigned char player_jump_left[];
 extern const unsigned char player_idle[];

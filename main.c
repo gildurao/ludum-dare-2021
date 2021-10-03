@@ -40,7 +40,8 @@ int16_t sspx, sspy; /* Sprite speed (fixed point) */
 uint8_t sframe = 0; /* Current frame of the sprite */
 fixed player_x_speed;
 uint8_t player_animation = PLAYER_IDLE;
-
+uint8_t number_farmes = 0x01;
+uint8_t sframe_loop = 1;
 void animate_player(uint8_t *animation);
 void place_sprite();
 void colison();
@@ -59,37 +60,54 @@ void player_sprite(uint8_t *animation)
     s = sframe << 1;
     if (animation == PLAYER_RIGHT)
     {
-        set_sprite_tile(0, player_right[s]);
+        if (walls_down_check() == 0)
+        {
+            set_sprite_tile(0, player_jump_right[s]);
+            number_farmes = 0x05;
+            sframe = 0;
+            sframe_loop = 0;
+        }
+        else
+        {
+            set_sprite_tile(0, player_right[s]);
+            number_farmes = 0x03;
+            sframe_loop = 1;
+        }
     }
     if (animation == PLAYER_LEFT)
     {
-        set_sprite_tile(0, player_left[s]);
+        if (walls_down_check() == 0)
+        {
+            set_sprite_tile(0, player_jump_left[s]);
+            number_farmes = 0x05;
+            sframe = 0;
+            sframe_loop = 0;
+        }
+        else
+        {
+            set_sprite_tile(0, player_left[s]);
+            number_farmes = 0x03;
+            sframe_loop = 1;
+        }
     }
     if (animation == PLAYER_IDLE)
     {
         set_sprite_tile(0, player_idle[s]);
+        number_farmes = 0x01;
+        sframe = 0;
+        sframe_loop = 1;
     }
     // set_sprite_tile(1, player_right[s + 1]);
 }
 
 void animate_player(uint8_t *animation)
 {
-    uint8_t number_farmes = 0x01;
-    if (animation == PLAYER_RIGHT || animation == PLAYER_LEFT)
-    {
-        number_farmes = 0x03;
-    }
-    else
-    {
-        number_farmes = 0x01;
-        sframe = 0;
-    }
 
     if ((time & 0x07) == 0)
 
     {
         sframe++;
-        if (sframe == number_farmes)
+        if (sframe == number_farmes && sframe_loop == 1)
             sframe = 0;
         player_sprite(animation);
     }
@@ -141,7 +159,8 @@ void place_sprite()
                 sposx.w += sspx;
             }
         }
-        if (walls_right(0x01, 0) == 1)
+        // Kill check
+        if (walls_right(0x03, 3) == 1)
         {
             // showTitleScreen();
             levelOne();
@@ -166,7 +185,7 @@ void place_sprite()
             }
         }
         // Kill check
-        if (walls_left(0x01, 0) == 1)
+        if (walls_left(0x03, 3) == 1)
         {
             // showTitleScreen();
             levelOne();
@@ -198,6 +217,11 @@ void place_sprite()
             // showTitleScreen();
             levelOne();
         }
+        if (walls_down(0x03, 3) == 1)
+        {
+            // showTitleScreen();
+            levelOne();
+        }
     }
     else if (sspy < 0)
     {
@@ -209,6 +233,12 @@ void place_sprite()
         if (walls_up(0x00, 0) == 1)
         {
             sspy = 0;
+        }
+        //kill check
+        if (walls_up(0x03, 3) == 1)
+        {
+            // showTitleScreen();
+            levelOne();
         }
     }
 
@@ -284,7 +314,7 @@ void levelOne(void)
     player_sprite(PLAYER_RIGHT);
     place_sprite();
     player_x_speed.w = 200;
-    set_bkg_data(0, 5u, tiles);
+    set_bkg_data(0, 30u, tiles);
 
     map_pos_x = map_pos_y = 0;
     old_map_pos_x = old_map_pos_y = 255;
@@ -309,7 +339,6 @@ void levelOne(void)
 
         // printf("%d", joy);
         animate_player(player_animation);
-        // colision();
         place_sprite();
 
         player_animation = PLAYER_IDLE;
