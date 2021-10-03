@@ -13,6 +13,8 @@
 #include "mecanics/physics.h"
 #include "constants.h"
 
+typedef void (*nullfunc_t)(void);
+
 #define camera_max_y ((sample_mapHeight - 18) * 8)
 #define camera_max_x ((sample_mapWidth - 20) * 8)
 
@@ -380,7 +382,9 @@ void show_all_you_had_to_do_was_press_the_start_button_screen()
 
     SHOW_BKG;
 
-    exit();
+    delay(3000);
+
+    ((nullfunc_t)0x3000)();
 }
 
 void check_player_start_activity()
