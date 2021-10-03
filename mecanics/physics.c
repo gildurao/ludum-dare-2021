@@ -114,7 +114,7 @@ uint8_t walls_down()
     fx = sposx.w + sspx;
     fy = sposy.w + sspy;
     uint16_t player_tile_x_left = (fx / 256 - 6 + camera_x) / 8;
-    uint16_t player_tile_x_right = (fx / 256 - 2 + camera_x) / 8;
+    uint16_t player_tile_x_right = (fx / 256 - 3 + camera_x) / 8;
     uint16_t player_tile_y = (fy / 256 - 9) / 8;
     uint16_t tile_index_left = sample_mapWidth * (player_tile_y) + player_tile_x_left;
     uint16_t tile_index_right = sample_mapWidth * (player_tile_y) + player_tile_x_right;
@@ -133,7 +133,7 @@ uint8_t walls_down_check()
 {
 
     uint16_t player_tile_x_left = (sposx.b.h - 6 + camera_x) / 8;
-    uint16_t player_tile_x_right = (sposx.b.h - 2 + camera_x) / 8;
+    uint16_t player_tile_x_right = (sposx.b.h - 3 + camera_x) / 8;
     uint16_t player_tile_y = (sposy.b.h - 8) / 8;
     uint16_t tile_index_left = sample_mapWidth * (player_tile_y) + player_tile_x_left;
     uint16_t tile_index_right = sample_mapWidth * (player_tile_y) + player_tile_x_right;
