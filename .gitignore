@@ -44,6 +44,8 @@
 
 # Kernel Module Compile Results
 *.mod*
+# ignore mod files for music assets
+!assets/music/*
 *.cmd
 .tmp_versions/
 modules.order

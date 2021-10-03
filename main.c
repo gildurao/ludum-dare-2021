@@ -1,5 +1,6 @@
 #include <gb/gb.h>
 #include <stdio.h>
+#include "gbt_player/gbt_player.h"
 #include "tiles/title_screen/letters.c"
 #include "maps/title_screen/title_map.c"
 #include "tiles/follow_the_train/follow_the_train_data.c"
@@ -299,6 +300,14 @@ void levelOne(void)
 
 void showTitleScreen()
 {
+    disable_interrupts();
+
+    gbt_play(song_Data, BG_MUSIC_MEMORY_BANK, BG_MUSIC_DEFAULT_SPEED);
+    gbt_loop(1);
+
+    set_interrupts(VBL_IFLAG);
+    enable_interrupts();
+
     set_bkg_data(0, 11, letters);
     set_bkg_tiles(0, 0, titleMapWidth, titleMapHeight, titleMap);
 
@@ -307,9 +316,13 @@ void showTitleScreen()
 
     while (1)
     {
+        wait_vbl_done();
+
         scroll_bkg(1, 1);
         delay(100);
         check_player_start_activity();
+
+        gbt_update();
     }
 }
 
