@@ -66,7 +66,7 @@ uint8_t y_collision()
     }
 }
 
-uint8_t walls_right()
+uint8_t walls_right(uint8_t start_sprite, uint8_t number_srpites)
 {
     uint16_t fx, fy;
     fx = sposx.w + sspx;
@@ -76,7 +76,7 @@ uint8_t walls_right()
     uint16_t player_tile_y_high = (fy / 256 - 15) / 8;
     uint16_t tile_index_right_low = sample_mapWidth * (player_tile_y_low) + player_tile_x;
     uint16_t tile_index_right_high = sample_mapWidth * (player_tile_y_high) + player_tile_x;
-    if (sample_map[tile_index_right_low] == 0x00 || sample_map[tile_index_right_high] == 0x00)
+    if (sample_map[tile_index_right_low] >= start_sprite && sample_map[tile_index_right_low] <= start_sprite + number_srpites || sample_map[tile_index_right_high] >= start_sprite && sample_map[tile_index_right_high] <= start_sprite + number_srpites)
     {
         return 1;
     }
@@ -86,7 +86,7 @@ uint8_t walls_right()
     }
 }
 
-uint8_t walls_left()
+uint8_t walls_left(uint8_t start_sprite, uint8_t number_srpites)
 {
 
     uint16_t fx, fy;
@@ -97,7 +97,7 @@ uint8_t walls_left()
     uint16_t player_tile_y_high = (fy / 256 - 15) / 8;
     uint16_t tile_index_right_low = sample_mapWidth * (player_tile_y_low) + player_tile_x;
     uint16_t tile_index_right_high = sample_mapWidth * (player_tile_y_high) + player_tile_x;
-    if (sample_map[tile_index_right_low] == 0x00 || sample_map[tile_index_right_high] == 0x00)
+    if (sample_map[tile_index_right_low] >= start_sprite && sample_map[tile_index_right_low] <= start_sprite + number_srpites || sample_map[tile_index_right_high] >= start_sprite && sample_map[tile_index_right_high] <= start_sprite + number_srpites)
     {
         return 1;
     }
@@ -107,7 +107,7 @@ uint8_t walls_left()
     }
 }
 
-uint8_t walls_down()
+uint8_t walls_down(uint8_t start_sprite, uint8_t number_srpites)
 {
 
     uint16_t fx, fy;
@@ -119,7 +119,7 @@ uint8_t walls_down()
     uint16_t tile_index_left = sample_mapWidth * (player_tile_y) + player_tile_x_left;
     uint16_t tile_index_right = sample_mapWidth * (player_tile_y) + player_tile_x_right;
 
-    if (sample_map[tile_index_left] == 0x00 || sample_map[tile_index_right] == 0x00)
+    if (sample_map[tile_index_left] >= start_sprite && sample_map[tile_index_left] <= start_sprite + number_srpites || sample_map[tile_index_right] >= start_sprite && sample_map[tile_index_right] <= start_sprite + number_srpites)
     {
         return 1;
     }
@@ -148,7 +148,7 @@ uint8_t walls_down_check()
     }
 }
 
-uint8_t walls_up()
+uint8_t walls_up(uint8_t start_sprite, uint8_t number_srpites)
 {
     uint16_t fx, fy;
     fx = sposx.w + sspx;
@@ -159,7 +159,7 @@ uint8_t walls_up()
     uint16_t tile_index_left = sample_mapWidth * (player_tile_y) + player_tile_x_left;
     uint16_t tile_index_right = sample_mapWidth * (player_tile_y) + player_tile_x_right;
 
-    if (sample_map[tile_index_left] == 0x00 || sample_map[tile_index_right] == 0x00)
+    if (sample_map[tile_index_left] >= start_sprite && sample_map[tile_index_left] <= start_sprite + number_srpites || sample_map[tile_index_right] >= start_sprite && sample_map[tile_index_right] <= start_sprite + number_srpites)
     {
         return 1;
     }

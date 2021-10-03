@@ -122,7 +122,7 @@ void place_sprite()
     if (sspx > 0)
     {
 
-        if (walls_right() == 0)
+        if (walls_right(0x00, 0) == 0)
         {
 
             if (fx / 256 < (20 - 7) * 8)
@@ -139,10 +139,15 @@ void place_sprite()
                 sposx.w += sspx;
             }
         }
+        if (walls_right(0x01, 0) == 1)
+        {
+            // showTitleScreen();
+            levelOne();
+        }
     }
     else if (sspx < 0)
     {
-        if (walls_left() == 0)
+        if (walls_left(0x00, 0) == 0)
         {
             if (fx / 256 > 7 * 8)
             {
@@ -158,6 +163,12 @@ void place_sprite()
                 sposx.w += sspx;
             }
         }
+        // Kill check
+        if (walls_left(0x01, 0) == 1)
+        {
+            // showTitleScreen();
+            levelOne();
+        }
     }
 
     if (walls_down_check() == 0)
@@ -168,24 +179,32 @@ void place_sprite()
 
     if (sspy > 0)
     {
-        if (walls_down() == 0)
+        // DOWN Collision Check
+        if (walls_down(0x00, 0) == 0)
         {
 
             sposy.w += sspy;
         }
-        if (walls_down() == 1)
+        if (walls_down(0x00, 0) == 1)
         {
             sspy = 0;
+        }
+
+        // Kill check
+        if (walls_down(0x01, 0) == 1)
+        {
+            // showTitleScreen();
+            levelOne();
         }
     }
     else if (sspy < 0)
     {
-        if (walls_up() == 0)
+        if (walls_up(0x00, 0) == 0)
         {
             // printf("%d ", sspy);
             sposy.w += sspy;
         }
-        if (walls_up() == 1)
+        if (walls_up(0x00, 0) == 1)
         {
             sspy = 0;
         }

@@ -5,10 +5,10 @@
 extern void colision();
 extern uint8_t over_ground();
 extern uint8_t y_collision();
-extern uint8_t walls_right();
-extern uint8_t walls_left();
-extern uint8_t walls_down();
-extern uint8_t walls_up();
+extern uint8_t walls_right(uint8_t start_sprite, uint8_t number_srpites);
+extern uint8_t walls_left(uint8_t start_sprite, uint8_t number_srpites);
+extern uint8_t walls_down(uint8_t start_sprite, uint8_t number_srpites);
+extern uint8_t walls_up(uint8_t start_sprite, uint8_t number_srpites);
 extern uint8_t walls_down_check();
 
 
