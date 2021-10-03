@@ -30,11 +30,14 @@ uint16_t camera_x, camera_y, old_camera_x, old_camera_y;
 uint8_t map_pos_x, map_pos_y, old_map_pos_x, old_map_pos_y;
 // redraw flag, indicates that camera position was changed
 uint8_t redraw;
-static uint8_t time = 0;      /* Global "time" value (counter) */
-fixed sposx, sposy;           /* Sprite position (fixed point) */
-fixed Last_sposx, Last_sposy; /* Last sprite position (fixed point) */
-fixed sspx, sspy;             /* Sprite speed (fixed point) */
-uint8_t sframe = 0;           /* Current frame of the sprite */
+static uint8_t time = 0; /* Global "time" value (counter) */
+fixed sposx, sposy;      /* Sprite position (fixed point) */
+fixed fsposx, fsposy;    /* Future Sprite position (fixed point) */
+// fixed Last_sposx, Last_sposy; /* Last sprite position (fixed point) */
+int16_t sspx, sspy; /* Sprite speed (fixed point) */
+uint8_t sframe = 0; /* Current frame of the sprite */
+fixed player_x_speed;
+uint8_t player_animation = PLAYER_IDLE;
 
 void animate_player(uint8_t *animation);
 void place_sprite();
@@ -92,13 +95,106 @@ void animate_player(uint8_t *animation)
 
 void place_sprite()
 {
-    // if (y_collision() == 1){
-    //     sposx.b.h = Last_sposx.b.h
-    // } else {
 
-    // }
+    //speed limit
+
+    if (sspx > MAX_X_SPEED)
+    {
+        sspx = MAX_X_SPEED;
+    }
+    if (sspx < -MAX_X_SPEED)
+    {
+        sspx = -MAX_X_SPEED;
+    }
+    if (sspy > MAX_X_SPEED)
+    {
+        sspy = MAX_Y_SPEED;
+    }
+    if (sspy < -MAX_Y_SPEED)
+    {
+        sspy = -MAX_Y_SPEED;
+    }
+
+    uint16_t fx, fy;
+    fx = sposx.w + sspx;
+    fy = sposy.w + sspy;
+    // printf("%d ", sspy);
+    if (sspx > 0)
+    {
+
+        if (walls_right() == 0)
+        {
+
+            if (fx / 256 < (20 - 7) * 8)
+            {
+                sposx.w += sspx;
+            }
+            else if (camera_x < camera_max_x)
+            {
+                camera_x++;
+                redraw = TRUE;
+            }
+            else if (fx / 256 < 20 * 8)
+            {
+                sposx.w += sspx;
+            }
+        }
+    }
+    else if (sspx < 0)
+    {
+        if (walls_left() == 0)
+        {
+            if (fx / 256 > 7 * 8)
+            {
+                sposx.w += sspx;
+            }
+            else if (camera_x > 0)
+            {
+                camera_x--;
+                redraw = TRUE;
+            }
+            else if (fx / 256 > 8)
+            {
+                sposx.w += sspx;
+            }
+        }
+    }
+
+    if (walls_down_check() == 0)
+    {
+        sspy = sspy + GRAVITY;
+        // sposy.w += sspy;
+    }
+
+    if (sspy > 0)
+    {
+        if (walls_down() == 0)
+        {
+
+            sposy.w += sspy;
+        }
+        if (walls_down() == 1)
+        {
+            sspy = 0;
+        }
+    }
+    else if (sspy < 0)
+    {
+        if (walls_up() == 0)
+        {
+            // printf("%d ", sspy);
+            sposy.w += sspy;
+        }
+        if (walls_up() == 1)
+        {
+            sspy = 0;
+        }
+    }
+
     move_sprite(0, sposx.b.h, sposy.b.h);
     // move_sprite(1, sposx.b.h + 8, sposy.b.h);
+    /* friction */
+    sspx = sspx / 2;
 }
 
 void set_camera()
@@ -162,11 +258,11 @@ void levelOne(void)
     sframe = 0;
     sposx.w = 0x1000;
     sposy.w = 0x1000;
-    sspx.w = 0x0000;
-    sspy.w = 0x0050;
+    sspx = 0x0000;
+    sspy = 0x0050;
     player_sprite(PLAYER_RIGHT);
     place_sprite();
-
+    player_x_speed.w = 200;
     set_bkg_data(0, 5u, tiles);
 
     map_pos_x = map_pos_y = 0;
@@ -182,7 +278,6 @@ void levelOne(void)
     enable_interrupts();
     redraw = FALSE;
 
-    uint8_t player_animation = PLAYER_IDLE;
     SCX_REG = camera_x;
     SCY_REG = camera_y;
     while (TRUE)
@@ -190,26 +285,25 @@ void levelOne(void)
         joy = joypad();
 
         time++;
+
         // printf("%d", joy);
         animate_player(player_animation);
-        colision();
-
-        /* Update sprite */
-        sposx.w += sspx.w;
-        sposy.w += sspy.w;
+        // colision();
         place_sprite();
-        // printf("%d", over_ground());
+
         player_animation = PLAYER_IDLE;
         // Jump
         if (joy & J_B)
 
         {
-            if (over_ground() == 1)
+            // printf("%d", walls_down_check());
+            if (walls_down_check() == 1)
             {
-                sposy.w = sposy.w - 200;
-                sspy.w = -0x090;
+                // sposy.w = sposy.w - 200;
+                sspy = -300;
             }
         }
+
         // up or down
         // if (joy & J_UP)
         // {
@@ -230,61 +324,15 @@ void levelOne(void)
         // left or right
         if (joy & J_LEFT)
         {
-            if (walls_left() == 0)
-            {
 
-                if (sposx.b.h > 8 * 5)
-                {
-                    player_animation = PLAYER_LEFT;
-                    sposx.b.h = sposx.b.h - 1;
-                }
-                else if (camera_x)
-                {
-                    camera_x--;
-                    redraw = TRUE;
-                    player_animation = PLAYER_LEFT;
-                }
-                else
-                {
-                    if (sposx.b.h > 8)
-                    {
-                        sposx.b.h = sposx.b.h - 1;
-                        player_animation = PLAYER_LEFT;
-                    }
-                }
-            }
+            player_animation = PLAYER_LEFT;
+            sspx = sspx - player_x_speed.w;
         }
         else if (joy & J_RIGHT)
         {
 
-            if (sposx.b.h < (20 - 7) * 8)
-            {
-                if (walls_right() == 0)
-                {
-                    sposx.b.h = sposx.b.h + 1;
-                }
-
-                player_animation = PLAYER_RIGHT;
-                // printf("%d < %d\n", camera_x, camera_max_x);
-            }
-            else if (camera_x < camera_max_x)
-            {
-                player_animation = PLAYER_RIGHT;
-                if (walls_right() == 0)
-                {
-                    camera_x++;
-                    redraw = TRUE;
-                }
-            }
-            else if (sposx.b.h < (20) * 8)
-            {
-                player_animation = PLAYER_RIGHT;
-
-                if (walls_right() == 0)
-                {
-                    sposx.b.h = sposx.b.h + 1;
-                }
-            }
+            player_animation = PLAYER_RIGHT;
+            sspx = sspx + player_x_speed.w;
         }
         if (redraw)
         {
