@@ -57,3 +57,5 @@ dkms.conf
 
 .vscode
 .bin
+.DS_Store
+*.lnk
