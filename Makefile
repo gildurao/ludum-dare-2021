@@ -16,8 +16,9 @@ PROJECTNAME    = NoName
 
 BINS	    = bin/$(PROJECTNAME).gb
 MAP = maps/SampleMap.c
-TILES = tiles/SampleTiles.c tiles/PlayerTile.c
-
+TILES = tiles/map/SampleTiles.c tiles/player/PlayerTile.c
+ANIMATION = animation/player_ani.c
+MECANICS = mecanics/physics.c
 CSOURCES   := $(wildcard *.c)
 ASMSOURCES := $(wildcard *.s)
 
@@ -29,7 +30,7 @@ compile.bat: Makefile
 
 # Compile and link all source files in a single call to LCC
 $(BINS):	$(CSOURCES) $(ASMSOURCES)
-	$(LCC) -o $@ $(CSOURCES) $(MAP) $(TILES) $(ASMSOURCES)
+	$(LCC) -o $@ $(CSOURCES) $(MAP) $(TILES) $(ANIMATION) $(MECANICS) $(ASMSOURCES)
 
 clean:
 	rm -f *.o *.lst *.map *.gb *.ihx *.sym *.cdb *.adb *.asm

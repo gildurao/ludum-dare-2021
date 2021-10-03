@@ -6,9 +6,10 @@
 #include "maps/follow_the_train/follow_the_train_map.c"
 
 #include "maps/SampleMap.h"
-#include "tiles/SampleTiles.h"
-#include "tiles/PlayerTile.h"
-
+#include "tiles/map/SampleTiles.h"
+#include "tiles/player/PlayerTile.h"
+#include "animation/player_ani.h"
+#include "mecanics/physics.h"
 #include "constants.h"
 
 #define camera_max_y ((sample_mapHeight - 18) * 8)
@@ -17,33 +18,6 @@
 #define MIN(A, B) ((A) < (B) ? (A) : (B))
 
 #define NBSFRAMES 0x02 /* Nb frames for the sprite */
-
-#define PLAYER_RIGHT 0x01
-#define PLAYER_LEFT 0x02
-#define PLAYER_IDLE 0x03
-
-const unsigned char player_right[] = {
-    0x00,
-    0x01,
-    0x02,
-    0x03,
-    0x04,
-    0x05,
-};
-
-const unsigned char player_idle[] = {
-    0x03,
-    0x00,
-};
-
-const unsigned char player_left[] = {
-    0x06,
-    0x07,
-    0x08,
-    0x09,
-    0x0A,
-    0x0B,
-};
 
 uint8_t joy;
 
@@ -68,99 +42,6 @@ void colison();
 uint8_t start_screen_retries = 3;
 
 /* Colison phisics */
-void colision()
-{
-
-    uint16_t player_tile_x = (sposx.b.h - 8) / 8 + (camera_x / 8);
-    uint16_t player_tile_y = (sposy.b.h + 1) / 8;
-    uint16_t tile_index_under = sample_mapWidth * (player_tile_y - 1) + player_tile_x;
-    uint16_t tile_index_over = sample_mapWidth * (player_tile_y - 2) + player_tile_x;
-    uint16_t tile_index_right = sample_mapWidth * (player_tile_y) + player_tile_x + 1;
-    uint16_t tile_index_left = sample_mapWidth * (player_tile_y) + player_tile_x - 1;
-
-    if (sample_map[tile_index_under] == 0x00)
-    {
-        sspy.w = 0;
-    }
-    if (sample_map[tile_index_right] == 0x00)
-    {
-        sspx.w = 0;
-    }
-    if (sample_map[tile_index_right] == 0x00)
-    {
-        sspx.w = 0;
-    }
-    if (sample_map[tile_index_under] == 0x02)
-    {
-        sspy.w = sspy.w + 0x005;
-    }
-}
-
-_Bool over_ground()
-{
-    uint16_t player_tile_x = (sposx.b.h - 8) / 8 + (camera_x / 8);
-    uint16_t player_tile_y = (sposy.b.h + 1) / 8;
-    uint16_t tile_index_under = sample_mapWidth * (player_tile_y - 1) + player_tile_x;
-    uint16_t tile_index_over = sample_mapWidth * (player_tile_y - 2) + player_tile_x;
-    if (sample_map[tile_index_under] == 0x00 && sample_map[tile_index_over] != 0x00)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-_Bool y_collision()
-{
-    uint16_t player_tile_x = (sposx.b.h - 8) / 8 + (camera_x / 8);
-    uint16_t player_tile_y = (sposy.b.h) / 8;
-    uint16_t tile_index_under = sample_mapWidth * (player_tile_y - 1) + player_tile_x;
-    uint16_t tile_index_over = sample_mapWidth * (player_tile_y - 2) + player_tile_x;
-    if (sample_map[tile_index_under] == 0x00 || sample_map[tile_index_over] == 0x00)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-uint8_t walls_right()
-{
-    uint16_t player_tile_x = ((sposx.b.h + 1) + camera_x) / 8;
-    uint16_t player_tile_y_low = (sposy.b.h - 9) / 8;
-    uint16_t player_tile_y_high = (sposy.b.h - 15) / 8;
-    uint16_t tile_index_right_low = sample_mapWidth * (player_tile_y_low) + player_tile_x;
-    uint16_t tile_index_right_high = sample_mapWidth * (player_tile_y_high) + player_tile_x;
-    if (sample_map[tile_index_right_low] == 0x00 || sample_map[tile_index_right_high] == 0x00)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-uint8_t walls_left()
-{
-    uint16_t player_tile_x = ((sposx.b.h - 9) + camera_x) / 8;
-    uint16_t player_tile_y_low = (sposy.b.h - 9) / 8;
-    uint16_t player_tile_y_high = (sposy.b.h - 15) / 8;
-    uint16_t tile_index_low = sample_mapWidth * (player_tile_y_low) + player_tile_x;
-    uint16_t tile_index_high = sample_mapWidth * (player_tile_y_high) + player_tile_x;
-    if (sample_map[tile_index_low] == 0x00 || sample_map[tile_index_high] == 0x00)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
-}
 
 /* Set sprite tiles */
 void player_sprite(uint8_t *animation)
