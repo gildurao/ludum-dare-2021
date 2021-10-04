@@ -252,10 +252,16 @@ void place_sprite()
         camera_x > 60 && camera_x < 62 ||
         camera_x > 66 && camera_x < 68 ||
         camera_x > 70 && camera_x < 80 ||
-        camera_x > 90 && camera_x < 200 ||
-        camera_x > 350 && camera_x < 370 ||
-        camera_x > 430 && camera_x < 470 ||
-        camera_x > 700 && camera_x < 1000
+        camera_x > 90 && camera_x < 100 ||
+        camera_x > 105 && camera_x < 108 ||
+        camera_x > 110 && camera_x < 116 ||
+        camera_x > 120 && camera_x < 140 ||
+        camera_x > 145 && camera_x < 180 ||
+        camera_x > 250 && camera_x < 253 ||
+        camera_x > 260 && camera_x < 268 ||
+        camera_x > 350 && camera_x < 400 ||
+        camera_x > 410 && camera_x < 470 ||
+        camera_x > 500 && camera_x < 1000
 
     )
     {

@@ -8,7 +8,7 @@
    Section       : 
    Bank          : 0
    Map size      : 256 x 19
-   Tile set      : Z:\home\joao\Documents\gamejam\GB\gbdk\games\ludum-dare-2021\assets\tiles\levelOne.gbr
+   Tile set      : Z:\home\joao\Documents\gamejam\GB\gbdk\games\ludum-dare-2021\assets\tiles\levelone_glitch_1.gbr
    Plane count   : 1 plane (8 bits)
    Plane order   : Tiles are continues
    Tile offset   : 0
