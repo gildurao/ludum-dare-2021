@@ -264,6 +264,7 @@ void place_sprite()
         camera_x > 500 && camera_x < 1000
 
     )
+
     {
         if (sprite_tile < 10)
         {
