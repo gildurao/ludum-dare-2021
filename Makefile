@@ -16,7 +16,7 @@ PROJECTNAME    = unSTabLe
 
 BINS	    = bin/$(PROJECTNAME).gb
 MAP = maps/SampleMap.c
-TILES = tiles/map/SampleTiles.c tiles/player/PlayerTile.c
+TILES = tiles/map/SampleTiles.c  tiles/player/PlayerTile.c
 ANIMATION = animation/player_ani.c
 MECANICS = mecanics/physics.c
 BGMUSIC = bg_music/hugetracker_bg_music.c

@@ -8,6 +8,7 @@
 
 #include "maps/SampleMap.h"
 #include "tiles/map/SampleTiles.h"
+// #include "tiles/map/SampleTiles2.h"
 #include "tiles/player/PlayerTile.h"
 #include "animation/player_ani.h"
 #include "mecanics/physics.h"
@@ -42,6 +43,7 @@ fixed player_x_speed;
 uint8_t player_animation = PLAYER_IDLE;
 uint8_t number_farmes = 0x01;
 uint8_t sframe_loop = 1;
+uint8_t sprite_tile = 0;
 void animate_player(uint8_t *animation);
 void place_sprite();
 void colison();
@@ -242,6 +244,34 @@ void place_sprite()
     {
         // showTitleScreen();
         levelOne();
+    }
+    if (
+        camera_x > 40 && camera_x < 43 ||
+        camera_x > 50 && camera_x < 52 ||
+        camera_x > 60 && camera_x < 62 ||
+        camera_x > 60 && camera_x < 62 ||
+        camera_x > 66 && camera_x < 68 ||
+        camera_x > 70 && camera_x < 80 ||
+        camera_x > 90 && camera_x < 200 ||
+        camera_x > 350 && camera_x < 370 ||
+        camera_x > 430 && camera_x < 470 ||
+        camera_x > 700 && camera_x < 1000
+
+    )
+    {
+        if (sprite_tile < 10)
+        {
+            sprite_tile = 10;
+            set_bkg_data(0, 32u, tiles[1]);
+        }
+    }
+    else
+    {
+        if (sprite_tile >= 10)
+        {
+            sprite_tile = 0;
+            set_bkg_data(0, 30u, tiles);
+        }
     }
 
     move_sprite(0, sposx.b.h, sposy.b.h);
